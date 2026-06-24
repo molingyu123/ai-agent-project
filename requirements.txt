@@ -1,0 +1,11 @@
+langchain
+langgraph
+fastapi
+uvicorn
+psycopg2-binary
+redis
+celery
+pandas
+sentence-transformers
+pgvector
+# Add more as needed
