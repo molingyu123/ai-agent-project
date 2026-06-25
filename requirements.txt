@@ -1,11 +1,14 @@
 langchain
 langgraph
+langchain-community
+langchain-openai
 fastapi
 uvicorn
 psycopg2-binary
 redis
-celery
+celery[redis]
 pandas
 sentence-transformers
 pgvector
-# Add more as needed
+SQLAlchemy
+# Add more as needed for production

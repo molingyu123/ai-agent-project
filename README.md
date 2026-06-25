@@ -11,6 +11,6 @@
 ## 快速开始
 1. `cp .env.example .env`
 2. `docker-compose up -d`
-3. `pip install -r requirements.txt`
+3. `poetry install` or `pip install -r requirements.txt`
 
 See docs/architecture.md for details.
