@@ -1,14 +1,29 @@
 from fastapi import FastAPI
-from api.routes import chat_router
+
+from api.routes import agent_router, chat_router, knowledge_router, sync_router
+from core.database import init_db
 
 app = FastAPI(title="AI Agent Project")
+
+
+@app.on_event("startup")
+async def startup():
+    init_db()
+
 
 @app.get("/")
 async def root():
     return {"message": "AI Agent Production Ready!"}
 
-# Include routes
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 app.include_router(chat_router)
+app.include_router(agent_router)
+app.include_router(knowledge_router)
+app.include_router(sync_router)
 
 if __name__ == "__main__":
     import uvicorn

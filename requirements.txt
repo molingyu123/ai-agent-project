@@ -5,10 +5,12 @@ langchain-openai
 fastapi
 uvicorn
 psycopg2-binary
+requests
 redis
 celery[redis]
 pandas
+openpyxl
 sentence-transformers
 pgvector
 SQLAlchemy
-# Add more as needed for production
+pytest
