@@ -5,3 +5,6 @@ requests
 chromadb
 sentence-transformers
 numpy
+langchain-community
+gradio
+watchdog
