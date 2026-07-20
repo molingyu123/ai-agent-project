@@ -7,6 +7,15 @@ import requests
 from datetime import datetime
 from pathlib import Path
 
+# RAG imports
+try:
+    import chromadb
+    from chromadb.utils import embedding_functions
+    RAG_AVAILABLE = True
+except ImportError:
+    RAG_AVAILABLE = False
+    print("ChromaDB not installed, using placeholder RAG")
+
 # Legacy system integration
 def integrate_legacy_system():
     """对接原始老业务系统"""
@@ -34,13 +43,49 @@ def monitor_data_updates():
             print(f"Detected update in: {file_path['path']}")
     # TODO: Add DB polling, webhooks
 
-# Knowledge Q&A
+# Knowledge Q&A - Real RAG with ChromaDB
 def knowledge_qa(query: str):
-    """知识问答 - 支持RAG"""
+    """真实知识问答 - ChromaDB RAG实现"""
     print(f"[{datetime.now()}] Processing knowledge query: {query}")
-    # TODO: Integrate ChromaDB + embeddings for real RAG
     config = load_config()
-    return f"基于知识库回答 '{query}'：这是生产级RAG占位响应，支持企业文档检索。配置使用 {config['knowledge_base']['vector_db']}"
+    
+    if not RAG_AVAILABLE:
+        return f"基于知识库回答 '{query}'：ChromaDB未安装，使用占位响应。"
+    
+    try:
+        # Initialize ChromaDB
+        client = chromadb.PersistentClient(path="./knowledge_base/chroma_db")
+        embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=config['knowledge_base']['embedding_model']
+        )
+        
+        # Create or get collection
+        collection = client.get_or_create_collection(
+            name="project_knowledge",
+            embedding_function=embedding_func
+        )
+        
+        # Load sample documents if empty
+        if collection.count() == 0:
+            with open("knowledge_base/sample_docs.txt", "r", encoding="utf-8") as f:
+                docs = [line.strip() for line in f.readlines() if line.strip()]
+            collection.add(
+                documents=docs,
+                ids=[f"doc_{i}" for i in range(len(docs))]
+            )
+            print("Loaded sample knowledge base.")
+        
+        # Query
+        results = collection.query(
+            query_texts=[query],
+            n_results=2
+        )
+        
+        context = "\n".join(results['documents'][0]) if results['documents'] else "No relevant docs."
+        return f"基于知识库回答 '{query}'：\n{context}\n\n(真实RAG检索完成)"
+    except Exception as e:
+        print(f"RAG error: {e}")
+        return f"RAG查询失败: {str(e)}"
 
 # Data analysis
 def analyze_project_data(data_source=None):
