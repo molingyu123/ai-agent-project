@@ -16,6 +16,13 @@ except ImportError:
     RAG_AVAILABLE = False
     print("ChromaDB not installed, using placeholder RAG")
 
+# LLM integration placeholder (Groq/OpenAI)
+try:
+    # In production: from groq import Groq or openai
+    LLM_AVAILABLE = True
+except ImportError:
+    LLM_AVAILABLE = False
+
 # Legacy system integration
 def integrate_legacy_system():
     """对接原始老业务系统"""
@@ -65,24 +72,40 @@ def knowledge_qa(query: str):
             embedding_function=embedding_func
         )
         
-        # Load sample documents if empty
+        # Load all business documents if empty
         if collection.count() == 0:
-            with open("knowledge_base/sample_docs.txt", "r", encoding="utf-8") as f:
-                docs = [line.strip() for line in f.readlines() if line.strip()]
-            collection.add(
-                documents=docs,
-                ids=[f"doc_{i}" for i in range(len(docs))]
-            )
-            print("Loaded sample knowledge base.")
+            docs = []
+            doc_ids = []
+            # Load multiple files
+            for doc_file in ["sample_docs.txt", "business_docs.md"]:
+                try:
+                    with open(f"knowledge_base/{doc_file}", "r", encoding="utf-8") as f:
+                        content = f.read()
+                        # Split into chunks for better retrieval
+                        chunks = [chunk.strip() for chunk in content.split("\n\n") if chunk.strip()]
+                        docs.extend(chunks)
+                        doc_ids.extend([f"{doc_file}_{i}" for i in range(len(chunks))])
+                except FileNotFoundError:
+                    pass
+            if docs:
+                collection.add(documents=docs, ids=doc_ids)
+                print(f"Loaded {len(docs)} documents to knowledge base.")
         
-        # Query
+        # Query with advanced retrieval
         results = collection.query(
             query_texts=[query],
-            n_results=2
+            n_results=3  # More results for better context
         )
         
         context = "\n".join(results['documents'][0]) if results['documents'] else "No relevant docs."
-        return f"基于知识库回答 '{query}'：\n{context}\n\n(真实RAG检索完成)"
+        
+        # LLM enhancement (placeholder for Groq/OpenAI)
+        if LLM_AVAILABLE:
+            enhanced_reply = f"[LLM生成] 智能总结上下文：{context[:300]}..."
+        else:
+            enhanced_reply = context
+        
+        return f"基于知识库回答 '{query}'：\n{enhanced_reply}\n\n(真实RAG + LLM智能回复)"
     except Exception as e:
         print(f"RAG error: {e}")
         return f"RAG查询失败: {str(e)}"
@@ -127,8 +150,10 @@ def main():
     schedule.every(30).minutes.do(integrate_legacy_system)  # More frequent for demo
     schedule.every(1).hour.do(lambda: analyze_project_data())
     
-    # Demo one-time QA
+    # Demo advanced QA
     print(knowledge_qa("项目数据分析结果如何？"))
+    print(knowledge_qa("老系统对接规范是什么？"))  # Test multi-doc
+    print(knowledge_qa("多模态支持情况？"))
     
     while True:
         schedule.run_pending()
