@@ -1,19 +1,22 @@
 # AI Agent Production Project
 
 ## Overview
-This project builds a production-ready AI agent system capable of:
-- Integrating with legacy business systems
-- Scheduled data monitoring and updates
-- Knowledge Q&A capabilities
-- Project data analysis
+生产级AI智能体系统，支持：
+- 对接原始老业务系统
+- 定时监听更新数据
+- 知识问答（RAG）
+- 项目数据分析（Pandas + Excel报告）
 
-## Features
-- Legacy system docking via APIs/adapters
-- Cron jobs for data listening
-- RAG-based knowledge base
-- Data analysis modules (Pandas, visualization)
+## Quick Start
+```bash
+pip install -r requirements.txt
+python src/main.py
+```
 
-## Structure
-- src/: Core source code
-- config/: Configuration files
-- data/: Sample data and knowledge base
+## Features Implemented
+- Legacy integration with config-driven API
+- Scheduled monitoring
+- Knowledge QA module
+- Data analysis with report generation
+
+See GitHub for latest: https://github.com/molingyu123/ai-agent-project
