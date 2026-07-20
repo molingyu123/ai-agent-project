@@ -1,0 +1,17 @@
+legacy_system:
+  api_endpoint: "http://legacy-system.example.com/api"
+  auth_token: "placeholder"
+
+data_sources:
+  databases:
+    - type: mysql
+      host: localhost
+  files:
+    - path: /data/input.csv
+
+knowledge_base:
+  vector_db: "chroma"
+  embedding_model: "all-MiniLM-L6-v2"
+
+analysis:
+  output_dir: "/home/workdir/artifacts/reports"
