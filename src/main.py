@@ -72,12 +72,12 @@ def knowledge_qa(query: str):
             embedding_function=embedding_func
         )
         
-        # Load all business documents if empty
+        # Load all business documents + schema if empty
         if collection.count() == 0:
             docs = []
             doc_ids = []
             # Load multiple files
-            for doc_file in ["sample_docs.txt", "business_docs.md"]:
+            for doc_file in ["sample_docs.txt", "business_docs.md", "business_schema.sql"]:
                 try:
                     with open(f"knowledge_base/{doc_file}", "r", encoding="utf-8") as f:
                         content = f.read()
@@ -154,6 +154,7 @@ def main():
     print(knowledge_qa("项目数据分析结果如何？"))
     print(knowledge_qa("老系统对接规范是什么？"))  # Test multi-doc
     print(knowledge_qa("多模态支持情况？"))
+    print(knowledge_qa("业务数据库表结构是什么？"))  # Test schema understanding
     
     while True:
         schedule.run_pending()

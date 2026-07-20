@@ -15,3 +15,15 @@ knowledge_base:
 
 analysis:
   output_dir: "/home/workdir/artifacts/reports"
+
+# 业务数据库配置 - 用于理解整个系统业务
+business_db:
+  type: "mysql"  # or postgresql, etc.
+  host: "localhost"
+  port: 3306
+  database: "legacy_business"
+  tables:
+    - projects
+    - transactions
+    - customers
+  description: "核心业务数据库，包含项目、交易、客户等实体"
